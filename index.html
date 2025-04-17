@@ -42,8 +42,8 @@
   <h1>Prime Spiral Explorer</h1>
 
   <div class="controls">
-    <label>Zoom: <input type="range" id="zoom" min="2" max="15" step="1" value="5" /></label>
-<label><input type="checkbox" id="showNumbers" checked /> Show Numbers</label>
+    <label>Zoom: <input type="range" id="zoom" min="2" max="30" step="1" value="5"/></label>
+    <label><input type="checkbox" id="showNumbers" checked /> Show Numbers</label>
     <label><input type="checkbox" id="hideComposites" /> Hide Composites</label>
     <label><input type="checkbox" id="constellationMode" /> Prime Constellation Mode</label>
   </div>
@@ -81,7 +81,7 @@
       let radius = 0;
 
       const maxN = 10000;
-      const spacing = zoom * 2;
+      const spacing = zoom * 2.25;
 
       ctx.fillStyle = 'white';
       ctx.strokeStyle = '#33f';
