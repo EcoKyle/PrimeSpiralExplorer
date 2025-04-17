@@ -43,6 +43,7 @@
 
   <div class="controls">
     <label>Zoom: <input type="range" id="zoom" min="2" max="15" step="1" value="5" /></label>
+<label><input type="checkbox" id="showNumbers" checked /> Show Numbers</label>
     <label><input type="checkbox" id="hideComposites" /> Hide Composites</label>
     <label><input type="checkbox" id="constellationMode" /> Prime Constellation Mode</label>
   </div>
@@ -52,6 +53,7 @@
   <script>
     const canvas = document.getElementById('spiral');
     const ctx = canvas.getContext('2d');
+    const showNumbers = document.getElementById('showNumbers');
     const zoomSlider = document.getElementById('zoom');
     const hideComposites = document.getElementById('hideComposites');
     const constellationMode = document.getElementById('constellationMode');
@@ -86,29 +88,41 @@
 
       ctx.beginPath();
 
-      for (n = 1; n <= maxN; n++) {
-        angle = 0.1 * n;
-        radius = spacing * Math.sqrt(n);
+for (n = 1; n <= maxN; n++) {
+  angle = 0.1 * n;
+  radius = spacing * Math.sqrt(n);
 
-        const x = centerX + radius * Math.cos(angle);
-        const y = centerY + radius * Math.sin(angle);
+  const x = centerX + radius * Math.cos(angle);
+  const y = centerY + radius * Math.sin(angle);
 
-        if (isPrime(n)) {
-          ctx.fillStyle = constellationMode.checked ? '#66ffcc' : '#ffd700';
-          ctx.beginPath();
-          ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
-          ctx.fill();
+  if (isPrime(n)) {
+    ctx.fillStyle = constellationMode.checked ? '#66ffcc' : '#ffd700';
+    ctx.beginPath();
+    ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
+    ctx.fill();
 
-          if (constellationMode.checked) {
-            ctx.lineTo(x, y);
-          }
-        } else if (!hideComposites.checked) {
-          ctx.fillStyle = '#444';
-          ctx.beginPath();
-          ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
-          ctx.fill();
-        }
-      }
+    if (showNumbers.checked) {
+      ctx.fillStyle = '#88ffff';
+      ctx.font = `${8 + zoom}px sans-serif`; // dynamic font size
+      ctx.fillText(n, x + 4, y + 4);
+    }
+
+    if (constellationMode.checked) {
+      ctx.lineTo(x, y);
+    }
+  } else if (!hideComposites.checked) {
+    ctx.fillStyle = '#444';
+    ctx.beginPath();
+    ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
+    ctx.fill();
+
+    if (showNumbers.checked && zoom >= 5) {
+      ctx.fillStyle = '#888';
+      ctx.font = `${6 + zoom}px sans-serif`;
+      ctx.fillText(n, x + 4, y + 4);
+    }
+  }
+}
 
       if (constellationMode.checked) {
         ctx.stroke();
@@ -119,7 +133,8 @@
       zoom = +zoomSlider.value;
       drawSpiral();
     });
-
+    
+    showNumbers.addEventListener('change', drawSpiral);
     hideComposites.addEventListener('change', drawSpiral);
     constellationMode.addEventListener('change', drawSpiral);
 
