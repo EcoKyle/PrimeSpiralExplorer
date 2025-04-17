@@ -103,7 +103,8 @@ for (n = 1; n <= maxN; n++) {
 
 if (showNumbers.checked) {
   ctx.fillStyle = isPrime(n) ? '#88ffff' : '#888';
-  ctx.font = `${Math.floor(zoom * 1.1)}px sans-serif`;
+  const fontSize = Math.floor(zoom);
+  ctx.font = `${fontSize}px sans-serif`;
   ctx.fillText(n, x + 5, y + 5);
 }
 
@@ -118,7 +119,8 @@ if (showNumbers.checked) {
 
     if (showNumbers.checked && zoom >= 5) {
       ctx.fillStyle = '#888';
-      ctx.font = `${6 + zoom}px sans-serif`;
+      const fontSize = Math.floor(zoom);
+      ctx.font = `${fontSize}px sans-serif`;
       ctx.fillText(n, x + 4, y + 4);
     }
   }
