@@ -101,11 +101,11 @@ for (n = 1; n <= maxN; n++) {
     ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
     ctx.fill();
 
-    if (showNumbers.checked) {
-      ctx.fillStyle = '#88ffff';
-      ctx.font = `${8 + zoom}px sans-serif`; // dynamic font size
-      ctx.fillText(n, x + 4, y + 4);
-    }
+if (showNumbers.checked) {
+  ctx.fillStyle = isPrime(n) ? '#88ffff' : '#888';
+  ctx.font = `${Math.floor(zoom * 1.1)}px sans-serif`;
+  ctx.fillText(n, x + 5, y + 5);
+}
 
     if (constellationMode.checked) {
       ctx.lineTo(x, y);
