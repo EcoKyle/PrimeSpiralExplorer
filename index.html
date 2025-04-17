@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Prime Spiral Explorer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #0e0e0e;
+      color: #fefefe;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    canvas {
+      border: 1px solid #333;
+      background: #111;
+      margin-top: 1rem;
+      max-width: 100%;
+    }
+
+    .controls {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    label {
+      font-size: 0.9rem;
+    }
+
+    input[type="range"] {
+      width: 150px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Prime Spiral Explorer</h1>
+
+  <div class="controls">
+    <label>Zoom: <input type="range" id="zoom" min="2" max="15" step="1" value="5" /></label>
+    <label><input type="checkbox" id="hideComposites" /> Hide Composites</label>
+    <label><input type="checkbox" id="constellationMode" /> Prime Constellation Mode</label>
+  </div>
+
+  <canvas id="spiral" width="600" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById('spiral');
+    const ctx = canvas.getContext('2d');
+    const zoomSlider = document.getElementById('zoom');
+    const hideComposites = document.getElementById('hideComposites');
+    const constellationMode = document.getElementById('constellationMode');
+
+    let zoom = +zoomSlider.value;
+
+    function isPrime(n) {
+      if (n < 2) return false;
+      for (let i = 2; i <= Math.sqrt(n); i++) {
+        if (n % i === 0) return false;
+      }
+      return true;
+    }
+
+    function drawSpiral() {
+      const width = canvas.width;
+      const height = canvas.height;
+      ctx.clearRect(0, 0, width, height);
+
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      let n = 1;
+      let angle = 0;
+      let radius = 0;
+
+      const maxN = 10000;
+      const spacing = zoom * 2;
+
+      ctx.fillStyle = 'white';
+      ctx.strokeStyle = '#33f';
+
+      ctx.beginPath();
+
+      for (n = 1; n <= maxN; n++) {
+        angle = 0.1 * n;
+        radius = spacing * Math.sqrt(n);
+
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+
+        if (isPrime(n)) {
+          ctx.fillStyle = constellationMode.checked ? '#66ffcc' : '#ffd700';
+          ctx.beginPath();
+          ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
+          ctx.fill();
+
+          if (constellationMode.checked) {
+            ctx.lineTo(x, y);
+          }
+        } else if (!hideComposites.checked) {
+          ctx.fillStyle = '#444';
+          ctx.beginPath();
+          ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
+          ctx.fill();
+        }
+      }
+
+      if (constellationMode.checked) {
+        ctx.stroke();
+      }
+    }
+
+    zoomSlider.addEventListener('input', () => {
+      zoom = +zoomSlider.value;
+      drawSpiral();
+    });
+
+    hideComposites.addEventListener('change', drawSpiral);
+    constellationMode.addEventListener('change', drawSpiral);
+
+    drawSpiral();
+  </script>
+</body>
+</html>
