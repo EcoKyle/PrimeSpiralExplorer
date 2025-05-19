@@ -42,10 +42,12 @@
   <h1>Prime Spiral Explorer</h1>
 
   <div class="controls">
-    <label>Zoom: <input type="range" id="zoom" min="2" max="30" step="1" value="5"/></label>
+    <label>Zoom: <input type="range" id="zoom" min="2" max="30" step="1" value="5" /></label>
     <label><input type="checkbox" id="showNumbers" checked /> Show Numbers</label>
     <label><input type="checkbox" id="hideComposites" /> Hide Composites</label>
-    <label><input type="checkbox" id="constellationMode" /> Prime Constellation Mode</label>
+    <label>Prime Color:
+      <input type="range" id="colorSlider" min="0" max="360" value="50" />
+    </label>
   </div>
 
   <canvas id="spiral" width="600" height="600"></canvas>
@@ -56,7 +58,7 @@
     const showNumbers = document.getElementById('showNumbers');
     const zoomSlider = document.getElementById('zoom');
     const hideComposites = document.getElementById('hideComposites');
-    const constellationMode = document.getElementById('constellationMode');
+    const colorSlider = document.getElementById('colorSlider');
 
     let zoom = +zoomSlider.value;
 
@@ -77,57 +79,42 @@
       const centerY = height / 2;
 
       let n = 1;
-      let angle = 0;
-      let radius = 0;
-
       const maxN = 10000;
       const spacing = zoom * 2.25;
+      const hue = colorSlider.value;
 
-      ctx.fillStyle = 'white';
-      ctx.strokeStyle = '#33f';
+      for (n = 1; n <= maxN; n++) {
+        const angle = 0.1 * n;
+        const radius = spacing * Math.sqrt(n);
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
 
-      ctx.beginPath();
+        if (isPrime(n)) {
+          ctx.fillStyle = `hsl(${hue}, 100%, 60%)`;
+          ctx.beginPath();
+          ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
+          ctx.fill();
 
-for (n = 1; n <= maxN; n++) {
-  angle = 0.1 * n;
-  radius = spacing * Math.sqrt(n);
+          if (showNumbers.checked) {
+            ctx.fillStyle = `hsl(${hue}, 100%, 75%)`;
+            const fontSize = Math.floor(zoom);
+            ctx.font = `${fontSize}px sans-serif`;
+            ctx.fillText(n, x + 5, y + 5);
+          }
 
-  const x = centerX + radius * Math.cos(angle);
-  const y = centerY + radius * Math.sin(angle);
+        } else if (!hideComposites.checked) {
+          ctx.fillStyle = '#444';
+          ctx.beginPath();
+          ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
+          ctx.fill();
 
-  if (isPrime(n)) {
-    ctx.fillStyle = constellationMode.checked ? '#66ffcc' : '#ffd700';
-    ctx.beginPath();
-    ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
-    ctx.fill();
-
-if (showNumbers.checked) {
-  ctx.fillStyle = isPrime(n) ? '#88ffff' : '#888';
-  const fontSize = Math.floor(zoom);
-  ctx.font = `${fontSize}px sans-serif`;
-  ctx.fillText(n, x + 5, y + 5);
-}
-
-    if (constellationMode.checked) {
-      ctx.lineTo(x, y);
-    }
-  } else if (!hideComposites.checked) {
-    ctx.fillStyle = '#444';
-    ctx.beginPath();
-    ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
-    ctx.fill();
-
-    if (showNumbers.checked && zoom >= 5) {
-      ctx.fillStyle = '#888';
-      const fontSize = Math.floor(zoom);
-      ctx.font = `${fontSize}px sans-serif`;
-      ctx.fillText(n, x + 4, y + 4);
-    }
-  }
-}
-
-      if (constellationMode.checked) {
-        ctx.stroke();
+          if (showNumbers.checked && zoom >= 5) {
+            ctx.fillStyle = '#888';
+            const fontSize = Math.floor(zoom);
+            ctx.font = `${fontSize}px sans-serif`;
+            ctx.fillText(n, x + 4, y + 4);
+          }
+        }
       }
     }
 
@@ -135,10 +122,10 @@ if (showNumbers.checked) {
       zoom = +zoomSlider.value;
       drawSpiral();
     });
-    
+
     showNumbers.addEventListener('change', drawSpiral);
     hideComposites.addEventListener('change', drawSpiral);
-    constellationMode.addEventListener('change', drawSpiral);
+    colorSlider.addEventListener('input', drawSpiral);
 
     drawSpiral();
   </script>
